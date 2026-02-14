@@ -8,16 +8,30 @@ const AdminLogin = () => {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Placeholder — will be replaced with real auth via Lovable Cloud
-    if (email === "admin@oppswear.com" && password === "admin123") {
+  const handleLogin = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setError("");
+
+  try {
+    const response = await fetch('/.netlify/functions/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+
+    const data = await response.json();
+
+    if (response.ok && data.success) {
       localStorage.setItem("opps-admin", "true");
       navigate("/admin/dashboard");
     } else {
       setError("Credenciais inválidas");
     }
-  };
+
+  } catch (err) {
+    setError("Erro ao conectar com o servidor");
+  }
+};
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
